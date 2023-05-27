@@ -1,0 +1,37 @@
+CSE 111 Proposal for a Student Chosen Program
+
+    (This is a proposal. All proposals are written with our best
+    knowledge at the beginning of a project. As we progress from the
+    beginning to the end of a project, we gain more knowledge, and we
+    change some of our proposed ideas. This is part of completing any
+    project and is fine.  However, we still must write a proposal so
+    that our teachers or supervisors know what we intend to do. Please
+    answer each of the following questions to the best of your
+    knowledge.)
+
+1. What is the title of your program?
+Grocery Stock Service
+
+2. What real-world problem will your program address or help to solve?
+The program will help to ensure that employees have access to edit, create and delete products and also check if there're any stock empty
+For clients, they can create an account and buy what they want to, with a complex menu that you can check you receipt, check all products, check products by name,
+company or category. They can select the item and inform the quantity. By the end they can check the receipt and if they want to delete an item they inform the name and quantity.
+If they are done, they can o procceed to checkout, inform the payment type and select if they want to print the receipt.
+
+3. What will you learn from developing this program?
+I will learn more about MYSQL connections with Python and how to plan and organize my code logic
+I will separate them into folders with controllers, usecases, adapters, entities
+Use a docker compose file to create an image of mysql running
+
+4. What Python modules will your program use?
+
+    datetime, uuid, mysql.connector, math
+
+5. Will you separate your Python program into functions that each
+perform a single task?
+Yes
+
+6. Will you write test functions to test at least two of your program
+functions? 
+Yes
+

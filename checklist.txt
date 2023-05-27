@@ -1,0 +1,45 @@
+Bem vindo.
+perguntar a opcao
+
+1. Login 2. Register 3. Exit
+enquanto nao for igual a 3 continua rodando
+
+depois que fez login a tela muda
+se for cliente aparece:
+    Shop
+    Check receipt
+    Finish Shop
+    Exit
+
+Em Shop:
+    See All Categories
+    Get by name
+    Go back
+
+        See All Categories:
+            Fruits
+            Pasta
+            Drinks
+            Healthy
+            ...
+            Go back
+        
+        Get by name
+            input(type name)
+    
+    Cada produto
+        Ver o preço
+        nome
+        marca
+            Add to Cart 
+            Go back 
+                Add to Cart
+                    Quantity
+                    (Volta para todas as categorias)
+
+Em CheckReceipt:
+    Lista todos os produtos com as quantidades
+    Da o subtotal
+    volta para o menu anterior
+
+Finish Shop
