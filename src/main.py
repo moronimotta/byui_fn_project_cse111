@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 import mysql.connector
+from receipt.controller import Controller
+import os
 
 def main():
     # connect to database
@@ -18,6 +20,9 @@ def main():
     main_menu()
     
     connection.close()
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def check_empty(value):
     if value == "":

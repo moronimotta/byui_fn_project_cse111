@@ -43,3 +43,8 @@ Em CheckReceipt:
     volta para o menu anterior
 
 Finish Shop
+
+
+Adicionar workflow para o github testar toda a aplicação
+
+Criar os testes
