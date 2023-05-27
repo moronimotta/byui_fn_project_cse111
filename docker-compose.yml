@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+
+  db_local_byui:
+    platform: linux/x86_64
+    container_name: db_local_byui
+    image: mysql:8
+    restart: on-failure
+    command: [--innodb-flush-method=fsync]
+    environment:
+      MYSQL_DATABASE: "grocerystore"
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_PASSWORD: "root"
+      MYSQL_USER: "admin"
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysqldata/1:/var/lib/mysql
