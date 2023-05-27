@@ -1,11 +1,13 @@
 from user.adapter import Adapter
 
-class Controller():
-    def create_user(connection, username, password, email, name, phone_number):
+class Controller:
+    def create_user(self, connection, username, password, email, name, phone_number):
         Adapter.create_user(connection, username, password, email, name, phone_number)
 
-    def login(connection, username, password):
-        Adapter.login(connection, username, password)
+    def login(self, connection, username, password):
+        success, user_type = Adapter.login(connection, username, password)
+        if success:
+            return success, user_type
+        else:
+            return False, None
 
-    def check_if_is_admin(username, password):
-        Adapter.check_if_is_admin(username, password)

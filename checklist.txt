@@ -48,3 +48,7 @@ Finish Shop
 Adicionar workflow para o github testar toda a aplicação
 
 Criar os testes
+
+Cart tem que salvar em cada linha o produto, quantidade, username, nome da pessoa,
+
+Toda vez que um que proceder ao checkout, a quantidade de cada item deve ser diminuida no banco

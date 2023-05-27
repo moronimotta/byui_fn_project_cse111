@@ -15,7 +15,7 @@ Grocery Stock Service
 2. What real-world problem will your program address or help to solve?
 The program will help to ensure that employees have access to edit, create and delete products and also check if there're any stock empty
 For clients, they can create an account and buy what they want to, with a complex menu that you can check you receipt, check all products, check products by name,
-company or category. They can select the item and inform the quantity. By the end they can check the receipt and if they want to delete an item they inform the name and quantity.
+brand or category. They can select the item and inform the quantity. By the end they can check the receipt and if they want to delete an item they inform the name and quantity.
 If they are done, they can o procceed to checkout, inform the payment type and select if they want to print the receipt.
 
 3. What will you learn from developing this program?

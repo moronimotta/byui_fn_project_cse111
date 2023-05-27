@@ -5,6 +5,9 @@ import mysql.connector
 
 class Adapter:
     def create_user(connection, username, password, email, name, phone_number):
+        if username == "" or password == "" or email == "" or name == "" or phone_number == "":
+            print("You cannot leave any fields empty")
+            return
         cursor = connection.cursor()
         uuid_val = str(uuid.uuid4())
         created_at = datetime.now()
@@ -28,11 +31,15 @@ class Adapter:
         values = (username, password)
         cursor.execute(select_query, values)
         users = cursor.fetchall()
-        if len(users) == 0:
-            print("Invalid username or password")
-            return False
+        if len(users) > 0:
+            if Adapter.check_if_is_admin(username, password):
+                return True, "admin",
+            else:
+                return True, "user"
         else:
-            return True
+            print("Invalid username or password")
+            return False, None
+            
 
     def check_if_is_admin(username, password):
         if username == "admin" and password == "byui":
