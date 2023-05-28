@@ -1,1 +1,39 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install mysql-connector-python
+      run: pip install mysql-connector-python
+
+    - name: Install Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install docker.io -y
+        sudo systemctl start docker
+        sudo systemctl enable docker
+
+    - name: Build and run Docker Compose
+      run: docker-compose up --build -d
+
+    - name: Wait for services to start
+      run: sleep 10
+
+    - name: Run tests
+      run: python -m pytest tests/
 
