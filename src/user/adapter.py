@@ -47,6 +47,20 @@ class Adapter:
         else:
             print("Invalid username or password")
             return False
+    
+    def get_user_by_username_and_password(connection, username, password):
+        cursor = connection.cursor()
+        select_query = """
+        SELECT * FROM users WHERE username = %s AND password = %s
+        """
+        values = (username, password)
+        cursor.execute(select_query, values)
+        users = cursor.fetchall()
+        if len(users) == 0:
+            print("User not found")
+            return None
+        else:
+            return users[0]
 
 
 

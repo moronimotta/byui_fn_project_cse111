@@ -1,49 +1,3 @@
-Bem vindo.
-perguntar a opcao
-
-1. Login 2. Register 3. Exit
-enquanto nao for igual a 3 continua rodando
-
-depois que fez login a tela muda
-se for cliente aparece:
-    Shop
-    Check receipt
-    Finish Shop
-    Exit
-
-Em Shop:
-    See All Categories
-    Get by name
-    Go back
-
-        See All Categories:
-            Fruits
-            Pasta
-            Drinks
-            Healthy
-            ...
-            Go back
-        
-        Get by name
-            input(type name)
-    
-    Cada produto
-        Ver o preço
-        nome
-        marca
-            Add to Cart 
-            Go back 
-                Add to Cart
-                    Quantity
-                    (Volta para todas as categorias)
-
-Em CheckReceipt:
-    Lista todos os produtos com as quantidades
-    Da o subtotal
-    volta para o menu anterior
-
-Finish Shop
-
 
 Adicionar workflow para o github testar toda a aplicação
 
@@ -52,3 +6,21 @@ Criar os testes
 Cart tem que salvar em cada linha o produto, quantidade, username, nome da pessoa,
 
 Toda vez que um que proceder ao checkout, a quantidade de cada item deve ser diminuida no banco
+
+Senha: input não pode ser visto
+
+Verificar os clear_screen
+
+Ver o Error Handling
+
+
+Para criar o produto, usar .title para todos os itens
+Selecionar a categoria ao inves de digitar o nome
+
+Travar o terminal no menu para apenas digito
+
+Ao listar os produtos printar uma tabela bonita
+
+Precisa ver um jeito para quando selecionar no menu o produto ele mandar o id e a quantidade
+
+

@@ -10,4 +10,7 @@ class Controller:
             return success, user_type
         else:
             return False, None
+    
+    def get_user_by_username_and_password(self, connection, username, password):
+        return Adapter.get_user_by_username_and_password(connection, username, password)
 

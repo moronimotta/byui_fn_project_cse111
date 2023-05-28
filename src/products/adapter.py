@@ -163,3 +163,14 @@ class Adapter:
             return None
         else:
             return products
+
+    def update_stock_by_id_and_quantity(connection, id, quantity):
+        cursor = connection.cursor()
+        update_query = """
+        UPDATE products SET stock_size = stock_size - %s WHERE uuid = %s
+        """
+        values = (quantity, id)
+        cursor.execute(update_query, values)
+        connection.commit()
+        print("Stock updated successfully")
+        

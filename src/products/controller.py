@@ -33,3 +33,6 @@ class Controller():
 
     def get_all_products_for_order(self, connection):
         return Adapter.get_all_products_for_order(connection)
+    
+    def update_stock_by_id_and_quantity(self, connection, id, quantity):
+        Adapter.update_stock_by_id_and_quantity(connection, id, quantity)

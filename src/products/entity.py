@@ -11,3 +11,11 @@ class Product:
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         self.category = category
+
+class ProductSelection:
+    def __init__(self, id,name, brand, unit_price, quantity):
+        self.id = id
+        self.name = name
+        self.brand = brand
+        self.unit_price = unit_price
+        self.quantity = quantity
