@@ -112,7 +112,7 @@ class Adapter:
         cursor.execute(select_query)
         products = cursor.fetchall()
         if len(products) > 0:
-            return "DANGER"
+            return "DANGER = Check all stocks"
         else:
             select_query = """
             SELECT * FROM products WHERE stock_size <= 10
@@ -120,7 +120,7 @@ class Adapter:
             cursor.execute(select_query)
             products = cursor.fetchall()
             if len(products) > 0:
-                return "WARNING"
+                return "WARNING - Some products are running out of stock"
             else:
                 return "OK"
 
@@ -154,7 +154,7 @@ class Adapter:
     def get_all_products_for_order(connection):
         cursor = connection.cursor()
         select_query = """
-        SELECT name, brand, stock_size FROM products WHERE stock_size >= 0
+        SELECT name, brand, stock_size FROM products WHERE stock_size >= 0 ORDER BY stock_size ASC
         """
         cursor.execute(select_query)
         products = cursor.fetchall()

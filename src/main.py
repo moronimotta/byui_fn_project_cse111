@@ -68,18 +68,27 @@ def main_menu():
             email = input("Enter your email: ")
             name = input("Enter your name: ")
             phonenumber = input("Enter your phone number: ")
-            while check_empty(username) or check_empty(password) or check_empty(email) or check_empty(name) or check_empty(phonenumber):
-                clear_screen()
-                print("You cannot leave any fields empty")
-                username = input("Enter your username: ")
-                password = input("Enter your password: ")
-                email = input("Enter your email: ")
-                name = input("Enter your name: ")
-                phonenumber = input("Enter your phone number: ")
             controller = UserController()
             if controller.create_user(connection, username, password, email, name, phonenumber):
                 clear_screen()
                 print("User created successfully")
+            print("Login in to continue")
+            usrname = input("Enter your username: ")
+            password = input("Enter your password: ")
+            controller = UserController()
+            lgn_succ, type = controller.login(connection, usrname, password)
+            if lgn_succ:
+                clear_screen()
+                print("Login successful")
+                login_info.append(usrname)
+                login_info.append(password)
+                logged_menu(type)
+                print("Thank you for shopping with us")
+                break
+            else:
+                clear_screen()
+                print("Invalid username or password")
+            
         else:
             clear_screen()
             print("Invalid choice")
@@ -136,13 +145,15 @@ def logged_menu(type):
                 controller = ProductController()
                 if controller.delete_product(connection, id):
                     print("Product deleted successfully")
-                else:
-                    print("Invalid id")
             elif choice == 6:
+                clear_screen()
                 controller = ProductController()
                 products = controller.get_all_products_for_order(connection)
-                for product in products:
-                    print(product)
+
+                headers = ["Product", "Quantity"]
+                rows = [[product[0], product[2]] for product in products]
+
+                print(tabulate(rows, headers, tablefmt="fancy_grid"))
             else:
                 print("Invalid choice")
             input("Press Enter to continue...")
@@ -201,20 +212,21 @@ def shop_menu():
         if choice == 1:
             controller = ProductController()
             categories = controller.get_all_categories(connection)
-            for category in categories:
-                print(category)
+
+            headers = ["Category"]
+            rows = [[category[0]] for category in categories]
+
+            print(tabulate(rows, headers, tablefmt="fancy_grid"))
         elif choice == 2:
             controller = ProductController()
             products = controller.get_all_products(connection)
-            # Display the products to the user
+
             display_products(products)
 
-            # Get the product selection from the user
             product_selection = get_product_selection(products)
 
             clear_screen()
 
-            # Print the selected products
             print_selected_products(product_selection)
         elif choice == 3:
             controller = ProductController()
@@ -268,7 +280,11 @@ def display_products(products):
 
 def get_product_selection(products):
     while True:
-        selected_numbers = input("Enter the numbers of the products you want to order (comma-separated): ")
+        print("Enter the numbers of the products you want to order (comma-separated): ")
+        print("Press Enter to go back")
+        selected_numbers = input("Enter your choice:")
+        if selected_numbers == "":
+            return []
         selected_numbers = selected_numbers.replace(" ", "").split(",")
         try:
             selected_numbers = [int(num) for num in selected_numbers]
@@ -348,11 +364,11 @@ def finish_shopping():
                 }
                 products.append(product_info)
 
-            create_grocery_receipt(person_name, products)
-            for product in cart:
-                pdt_controller.update_stock_by_id_and_quantity(connection, product.id, product.quantity)
-            empty_cart(cart)
-            print("Thank you for shopping with us!")
+            if create_grocery_receipt(person_name, products):
+                for product in cart:
+                    pdt_controller.update_stock_by_id_and_quantity(connection, product.id, product.quantity)
+                empty_cart(cart)
+                print("Thank you for shopping with us!")
             break
         else:
             print("Invalid choice")
@@ -364,17 +380,17 @@ def finish_shopping():
         choice = int(input("Enter your choice: "))
 
 
-
-
-
-
 def create_grocery_receipt(person_name, products):
     now = datetime.now()
     date_str = now.strftime("%A, %d %B %Y")
     time_str = now.strftime("%H:%M:%S")
 
     # ensure that you are running this script from the root directory of the project
-    filename = f"user_receipts/{person_name}_{now.strftime('%Y%m%d_%H%M%S')}.txt"
+    directory = "user_receipts"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    filename = f"{directory}/{person_name}_{now.strftime('%Y%m%d_%H%M%S')}.txt"
 
     headers = ["No.", "Product", "Brand", "Price", "Quantity"]
     rows = []
@@ -398,6 +414,23 @@ def create_grocery_receipt(person_name, products):
     print(f"\nReceipt saved as '{filename}'")
 
 
+def send_receipt_to_db():
+    # call controller
+    
+    json = {
+        "person_name": variable,
+        "date": variable,
+        "time": variable,
+        "products": [
+            {
+                "name": variable,
+                "brand": variable,
+                "price": variable,
+                "quantity": variable,
+            },
+        ]
+    }
+    # call function
 
 if __name__ == "__main__":
     main()

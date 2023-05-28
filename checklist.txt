@@ -5,22 +5,14 @@ Criar os testes
 
 Cart tem que salvar em cada linha o produto, quantidade, username, nome da pessoa,
 
-Toda vez que um que proceder ao checkout, a quantidade de cada item deve ser diminuida no banco
-
-Senha: input não pode ser visto
-
-Verificar os clear_screen
 
 Ver o Error Handling
-
 
 Para criar o produto, usar .title para todos os itens
 Selecionar a categoria ao inves de digitar o nome
 
-Travar o terminal no menu para apenas digito
 
-Ao listar os produtos printar uma tabela bonita
 
-Precisa ver um jeito para quando selecionar no menu o produto ele mandar o id e a quantidade
+
 
 
