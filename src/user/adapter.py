@@ -4,7 +4,7 @@ from user.entity import User
 import mysql.connector
 
 class Adapter:
-    def create_user(connection, username, password, email, name, phone_number):
+    def create_user(connection, username, password, email, name, phone_number, test=False):
         if username == "" or password == "" or email == "" or name == "" or phone_number == "":
             print("You cannot leave any fields empty")
             return

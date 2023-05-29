@@ -5,7 +5,7 @@ from products.entity import Product
 import mysql.connector
 
 class Adapter:
-    def create_product(connection, price, stock_size, name, brand, category):
+    def create_product(connection, price, stock_size, name, brand, category, test=False):
         if price == "" or stock_size == "" or name == "" or brand == "" or category == "":
             print("Error: One or more fields are empty")
             return
@@ -20,8 +20,13 @@ class Adapter:
         """
         values = (product.uuid, product.price, product.stock_size, product.name, product.brand, product.created_at, product.updated_at, product.category)
         cursor.execute(insert_query, values)
-        connection.commit()
-        print("Product created successfully")
+        # check if unittest is running
+        if test:
+            connection.rollback()
+            print("Product created successfully")
+        else:
+            connection.commit()
+            print("Product created successfully")
 
     def update_product(connection, uuid, price, stock_size, name, brand, category):
         cursor = connection.cursor()

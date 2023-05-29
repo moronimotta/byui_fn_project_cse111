@@ -4,7 +4,6 @@ import mysql.connector
 from receipt.controller import Controller as ReceiptController
 from products.controller import Controller as ProductController
 from user.controller import Controller as UserController
-from products.entity import ProductSelection
 from tabulate import tabulate
 import os
 
@@ -23,14 +22,31 @@ connection = mysql.connector.connect(
 if connection.is_connected():
     print("Connected to MySQL database")
 
-
 def main():
     clear_screen()
-    # main menu
+
     main_menu()
 
     connection.close()
 
+def empty_cart(cart):
+    cart = []
+    return cart
+
+
+def view_cart(cart):
+    if not cart:
+        print("Your cart is empty")
+        return
+
+    headers = ["Product", "Brand", "Unit Price", "Quantity", "Subtotal"]
+    rows = []
+    subtotal = 0
+    for product in cart:
+        subtotal = product.unit_price * product.quantity
+        rows.append([product.name, product.brand, f"${product.unit_price}", product.quantity, f"${subtotal}"])
+
+    print(tabulate(rows, headers, tablefmt="fancy_grid"))
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -193,11 +209,6 @@ def logged_menu(type):
     
     clear_screen()
 
-   
-
-
-    
-
 def shop_menu():
     print("1. See All Products' Categories")
     print("2. See All Products")
@@ -223,11 +234,11 @@ def shop_menu():
 
             display_products(products)
 
-            product_selection = get_product_selection(products)
+            product_selection = controller.get_product_selection(products, cart)
 
             clear_screen()
 
-            print_selected_products(product_selection)
+            controller.print_selected_products(product_selection)
         elif choice == 3:
             controller = ProductController()
             name = input("Enter the name of the product: ")
@@ -235,11 +246,11 @@ def shop_menu():
 
             display_products(products)
 
-            product_selection = get_product_selection(products)
+            product_selection = controller.get_product_selection(products, cart)
 
             clear_screen()
 
-            print_selected_products(product_selection)
+            controller.print_selected_products(product_selection)
         elif choice == 4:
             controller = ProductController()
             brand = input("Enter the brand of the product: ")
@@ -259,82 +270,6 @@ def shop_menu():
         print("5. Empty Cart")
         print("6. Go back")
         choice = int(input("Enter your choice: "))
-
-
-# Precisa estar no usecases do produto
-def display_products(products):
-    if not products:
-        print("No products found")
-        return
-
-    headers = ["No.", "Product", "Brand", "Price"]
-    rows = []
-    for i, product in enumerate(products, start=1):
-        name = product[3]  
-        brand = product[4]  
-        price = product[1]
-        rows.append([i, name, brand, f"${price}"])
-
-    print(tabulate(rows, headers, tablefmt="fancy_grid"))
-
-
-def get_product_selection(products):
-    while True:
-        print("Enter the numbers of the products you want to order (comma-separated): ")
-        print("Press Enter to go back")
-        selected_numbers = input("Enter your choice:")
-        if selected_numbers == "":
-            return []
-        selected_numbers = selected_numbers.replace(" ", "").split(",")
-        try:
-            selected_numbers = [int(num) for num in selected_numbers]
-            valid_selection = all(1 <= num <= len(products) for num in selected_numbers)
-            if valid_selection:
-                break
-            else:
-                print("Invalid input. Please enter valid numbers.")
-        except ValueError:
-            print("Invalid input. Please enter numbers separated by commas.")
-
-    for num in selected_numbers:
-        product = products[num - 1]
-        id = product[0]
-        name = product[3]  
-        brand = product[4]  
-        unit_price = product[1]  
-        quantity = int(input(f"Enter the quantity for {name} ({brand}): "))
-        cart.append(ProductSelection(id,name, brand, unit_price, quantity))
-
-    return cart
-# 
-
-def empty_cart(cart):
-    cart = []
-    return cart
-
-
-def view_cart(cart):
-    if not cart:
-        print("Your cart is empty")
-        return
-
-    headers = ["Product", "Brand", "Unit Price", "Quantity", "Subtotal"]
-    rows = []
-    subtotal = 0
-    for product in cart:
-        subtotal = product.unit_price * product.quantity
-        rows.append([product.name, product.brand, f"${product.unit_price}", product.quantity, f"${subtotal}"])
-
-    print(tabulate(rows, headers, tablefmt="fancy_grid"))
-
-
-
-def print_selected_products(selected_products):
-    for product in selected_products:
-                print(f"Product: {product.name} ({product.brand})")
-                print(f"Unit Price: ${product.unit_price}")
-                print(f"Quantity: {product.quantity}")
-                print()
 
 
 def finish_shopping():
