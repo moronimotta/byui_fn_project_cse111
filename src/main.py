@@ -13,7 +13,7 @@ login_info = []
 
 # connect to database
 connection = mysql.connector.connect(
-    host="localhost",
+    host="db_local_byui",
     user="admin",
     password="root",
     database="grocerystore"
