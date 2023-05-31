@@ -2,8 +2,7 @@ name: Python CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ master ]
 
 jobs:
   build:
@@ -18,9 +17,6 @@ jobs:
       with:
         python-version: 3.x
 
-    - name: Install mysql-connector-python
-      run: pip install mysql-connector-python
-
     - name: Install Docker
       run: |
         sudo apt-get update
@@ -34,6 +30,8 @@ jobs:
     - name: Wait for services to start
       run: sleep 10
 
-    - name: Run tests
-      run: python -m pytest tests/
+    - name: Install imports
+      run: ./install_imports.sh
 
+    - name: Run tests
+      run: ./run_tests.sh
