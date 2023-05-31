@@ -3,10 +3,10 @@ name: Python and Docker CI
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -16,10 +16,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x' # Replace with your desired Python version
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.4
+
 
       - name: Run install_imports.sh
         run: |
