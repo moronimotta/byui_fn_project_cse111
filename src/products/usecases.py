@@ -46,13 +46,14 @@ class UseCases:
             print("No products found")
             return
 
-        headers = ["No.", "Product", "Brand", "Price"]
+        headers = ["No.", "Product", "Brand", "Price", "Quantity"]
         rows = []
         for i, product in enumerate(products, start=1):
             name = product[3]  
             brand = product[4]  
             price = product[1]
-            rows.append([i, name, brand, f"${price}"])
+            quantity = product[2]
+            rows.append([i, name, brand, f"${price}", quantity])
 
         print(tabulate(rows, headers, tablefmt="fancy_grid"))
     
@@ -60,6 +61,7 @@ class UseCases:
         if not products:
             print("No products found")
             return []
+
         while True:
             print("Enter the numbers of the products you want to order (comma-separated): ")
             print("If you don't want to order anything, press ENTER.")
@@ -82,13 +84,21 @@ class UseCases:
         for num in selected_numbers:
             product = products[num - 1]
             id = product[0]
-            name = product[3]  
-            brand = product[4]  
-            unit_price = product[1]  
-            quantity = int(input(f"Enter the quantity for {name} ({brand}): "))
+            name = product[3]
+            brand = product[4]
+            unit_price = product[1]
+            max_quantity = product[2]  # Retrieve the quantity from the database
+            while True:
+                quantity = int(input(f"Enter the quantity for {name} ({brand}): "))
+                if quantity <= max_quantity:
+                    break
+                else:
+                    print(f"Invalid quantity. Maximum available quantity: {max_quantity}")
+
             cart.append(ProductSelection(id, name, brand, unit_price, quantity))
 
         return cart
+
 
     def print_selected_products(self, selected_products):
         for product in selected_products:
