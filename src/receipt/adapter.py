@@ -2,71 +2,46 @@ from datetime import datetime
 import uuid
 from receipt.entity import Receipt
 import mysql.connector
+import json
 
 class Adapter:
-    def create_receipt(connection, client_name, total, payment_method, payment_date, items):
-        cursor = connection.cursor()
-        uuid_val = str(uuid.uuid4())
-        created_at = datetime.now()
-        updated_at = datetime.now()
-        receipt = Receipt(client_name, total, payment_method, payment_date, items)
-        insert_query = """
-        INSERT INTO receipts (uuid, client_name, total, payment_method, payment_date, created_at, updated_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
-        values = (receipt.uuid, receipt.client_name, receipt.total, receipt.payment_method, receipt.payment_date, receipt.created_at, receipt.updated_at)
-        cursor.execute(insert_query, values)
-        connection.commit()
-        print("Receipt created successfully")
+    def __init__(self, connection):
+        self.connection = connection
 
-    def get_all_receipts(connection):
-        cursor = connection.cursor()
-        select_query = """
-        SELECT * FROM receipts
-        """
-        cursor.execute(select_query)
-        receipts = cursor.fetchall()
-        return receipts
+    def create_receipt(self, client_name, receipt_db, client_uuid, test=False):
+        try:
+            cursor = self.connection.cursor()
+            uuid_val = str(uuid.uuid4())
+            created_at = datetime.now()
+            updated_at = datetime.now()
+            insert_query = """
+            INSERT INTO receipts (uuid, created_at, updated_at, client_name, receipt, client_uuid)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            values = (uuid_val, created_at, updated_at, client_name, receipt_db, client_uuid)
+            cursor.execute(insert_query, values)
+            if test:
+                self.connection.rollback()
+                print("Receipt created successfully")
+            else:
+                self.connection.commit()
+                print("Receipt created successfully")
+                return True
+        except mysql.connector.Error as error:
+            print("Error creating receipt:", error)
+            self.connection.rollback()
+            return False
 
-    def get_receipt_by_uuid(connection, uuid):
-        cursor = connection.cursor()
-        select_query = """
-        SELECT * FROM receipts WHERE uuid = %s
-        """
-        values = (uuid,)
-        cursor.execute(select_query, values)
-        receipt = cursor.fetchone()
-        return receipt
-
-    def update_receipt(connection, uuid, client_name, total, payment_method, payment_date, items):
-        cursor = connection.cursor()
-        updated_at = datetime.now()
-        receipt = Receipt(client_name, total, payment_method, payment_date, items)
-        update_query = """
-        UPDATE receipts SET client_name = %s, total = %s, payment_method = %s, payment_date = %s, updated_at = %s WHERE uuid = %s
-        """
-        values = (receipt.client_name, receipt.total, receipt.payment_method, receipt.payment_date, receipt.updated_at, uuid)
-        cursor.execute(update_query, values)
-        connection.commit()
-        print("Receipt updated successfully")
-
-    def delete_receipt(connection, uuid):
-        cursor = connection.cursor()
-        delete_query = """
-        DELETE FROM receipts WHERE uuid = %s
-        """
-        values = (uuid,)
-        cursor.execute(delete_query, values)
-        connection.commit()
-        print("Receipt deleted successfully")
-
-    def get_receipts_by_client_name(connection, client_name):
-        cursor = connection.cursor()
-        select_query = """
-        SELECT * FROM receipts WHERE client_name = %s
-        """
-        values = (client_name,)
-        cursor.execute(select_query, values)
-        receipts = cursor.fetchall()
-        return receipts
-
+    def get_last_receipt_by_person_name(self, person_name):
+        try:
+            cursor = self.connection.cursor()
+            query = """
+            SELECT * FROM receipts WHERE client_name = %s ORDER BY created_at DESC LIMIT 1
+            """
+            values = (person_name,)
+            cursor.execute(query, values)
+            result = cursor.fetchone()
+            return result
+        except mysql.connector.Error as error:
+            print("Error retrieving last receipt:", error)
+            return None

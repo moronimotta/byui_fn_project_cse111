@@ -19,8 +19,7 @@ connection = mysql.connector.connect(
     database="grocerystore"
 )
 
-if connection.is_connected():
-    print("Connected to MySQL database")
+
 
 def main():
     clear_screen()
@@ -29,9 +28,9 @@ def main():
 
     connection.close()
 
-def empty_cart(cart):
+def empty_cart():
+    global cart
     cart = []
-    return cart
 
 
 def view_cart(cart):
@@ -41,12 +40,14 @@ def view_cart(cart):
 
     headers = ["Product", "Brand", "Unit Price", "Quantity", "Subtotal"]
     rows = []
-    subtotal = 0
+    total = 0
     for product in cart:
         subtotal = product.unit_price * product.quantity
         rows.append([product.name, product.brand, f"${product.unit_price}", product.quantity, f"${subtotal}"])
+        total += subtotal
 
     print(tabulate(rows, headers, tablefmt="fancy_grid"))
+    print(f"Total: ${total}")
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -64,61 +65,63 @@ def main_menu():
             clear_screen()
             usrname = input("Enter your username: ")
             password = input("Enter your password: ")
-            controller = UserController()
-            lgn_succ, type = controller.login(connection, usrname, password)
+            controller = UserController(connection)
+            lgn_succ, user_type = controller.login(usrname, password)
             if lgn_succ:
                 clear_screen()
                 print("Login successful")
-                login_info.append(usrname)
-                login_info.append(password)
-                logged_menu(type)
-                print("Thank you for shopping with us")
+                global login_info 
+                login_info = [usrname, password]
+                logged_menu(user_type)
+                print("Come back soon!")
                 break
             else:
                 clear_screen()
                 print("Invalid username or password")
         elif choice == 2:
             clear_screen()
-            username = input("Enter your username: ")
-            password = input("Enter your password: ")
-            email = input("Enter your email: ")
-            name = input("Enter your name: ")
-            phonenumber = input("Enter your phone number: ")
-            controller = UserController()
-            if controller.create_user(connection, username, password, email, name, phonenumber):
-                clear_screen()
-                print("User created successfully")
-            print("Login in to continue")
-            usrname = input("Enter your username: ")
-            password = input("Enter your password: ")
-            controller = UserController()
-            lgn_succ, type = controller.login(connection, usrname, password)
-            if lgn_succ:
-                clear_screen()
-                print("Login successful")
-                login_info.append(usrname)
-                login_info.append(password)
-                logged_menu(type)
-                print("Thank you for shopping with us")
-                break
-            else:
-                clear_screen()
-                print("Invalid username or password")
-            
+            ok = False
+            while ok != True:
+                username = input("Enter your username: ")
+                password = input("Enter your password: ")
+                email = input("Enter your email: ")
+                name = input("Enter your name: ")
+                phonenumber = input("Enter your phone number: ")
+                controller = UserController(connection)
+                ok = controller.create_user(username, password, email, name, phonenumber)
+                if ok:
+                    clear_screen()
+                    break
+                else:
+                    clear_screen()
+                    print("Invalid username or email")
+            print("Log in to continue")
+            while True:
+                usrname = input("Enter your username: ")
+                password = input("Enter your password: ")
+                controller = UserController(connection)
+                login_success, user_type = controller.login(usrname, password)
+                if login_success:
+                    break
+                else:
+                    clear_screen()
+                    print("Invalid username or password")
         else:
             clear_screen()
             print("Invalid choice")
-            print("1. Login")
-            print("2. Register")
-            print("3. Exit")
-            choice = int(input("Enter your choice: "))
+        
+        print("1. Login")
+        print("2. Register")
+        print("3. Exit")
+        choice = int(input("Enter your choice: "))
+
     clear_screen()
-    print("Thank you for shopping with us")
+    print("Come back soon!")
 
 
 def logged_menu(type):
-    controller = ProductController()
-    status = controller.check_all_stocks(connection)
+    controller = ProductController(connection)
+    status = controller.check_all_stocks()
 
     if type == "admin":
         print("=== Your stock status is: ", status, " ===")
@@ -128,9 +131,10 @@ def logged_menu(type):
         print("4. Create Product")
         print("5. Delete Product")
         print("6. Check Stock")
-        print("7. Logout")
+        print("7. Check Receipt From Client")
+        print("8. Logout")
         choice = int(input("Enter your choice: "))
-        while choice != 7:
+        while choice != 8:
             clear_screen()
             if choice == 1:
                 shop_menu()
@@ -139,7 +143,7 @@ def logged_menu(type):
             elif choice == 3:
                 finish_shopping()
             elif choice == 4:
-                controller = ProductController()
+                controller = ProductController(connection)
                 name = input("Enter the name of the product: ")
                 brand = input("Enter the brand of the product: ")
                 category = input("Enter the category of the product: ")
@@ -153,23 +157,28 @@ def logged_menu(type):
                     category = input("Enter the category of the product: ")
                     price = input("Enter the price of the product: ")
                     stock = input("Enter the stock of the product: ")
-                if controller.create_product(connection, price, stock, name, brand, category):
+                if controller.create_product(price, stock, name, brand, category):
                     continue
 
             elif choice == 5:
                 id = input("Enter the id of the product you want to delete: ")
-                controller = ProductController()
-                if controller.delete_product(connection, id):
+                controller = ProductController(connection)
+                if controller.delete_product(id):
                     print("Product deleted successfully")
             elif choice == 6:
                 clear_screen()
-                controller = ProductController()
-                products = controller.get_all_products_for_order(connection)
+                controller = ProductController(connection)
+                products = controller.get_all_products_for_order()
 
                 headers = ["Product", "Quantity"]
                 rows = [[product[0], product[2]] for product in products]
 
                 print(tabulate(rows, headers, tablefmt="fancy_grid"))
+            elif choice == 7:
+                clear_screen()
+                client_name = input("Enter the full name of the person: ")
+                controller = ReceiptController(connection)
+                controller.get_last_receipt_by_person_name(client_name)         
             else:
                 print("Invalid choice")
             input("Press Enter to continue...")
@@ -181,7 +190,8 @@ def logged_menu(type):
             print("4. Create Product")
             print("5. Delete Product")
             print("6. Check Stock")
-            print("7. Logout")
+            print("7. Check Receipt From Client")
+            print("8. Logout")
             choice = int(input("Enter your choice: "))
     else:
         print("1. Shop")
@@ -221,18 +231,18 @@ def shop_menu():
     while choice != 6:
         clear_screen()
         if choice == 1:
-            controller = ProductController()
-            categories = controller.get_all_categories(connection)
+            controller = ProductController(connection)
+            categories = controller.get_all_categories()
 
             headers = ["Category"]
             rows = [[category[0]] for category in categories]
 
             print(tabulate(rows, headers, tablefmt="fancy_grid"))
         elif choice == 2:
-            controller = ProductController()
-            products = controller.get_all_products(connection)
+            controller = ProductController(connection)
+            products = controller.get_all_products()
 
-            display_products(products)
+            controller.display_products(products)
 
             product_selection = controller.get_product_selection(products, cart)
 
@@ -240,11 +250,11 @@ def shop_menu():
 
             controller.print_selected_products(product_selection)
         elif choice == 3:
-            controller = ProductController()
+            controller = ProductController(connection)
             name = input("Enter the name of the product: ")
-            products = controller.get_all_products_by_name(connection, name)
+            products = controller.get_all_products_by_name(name)
 
-            display_products(products)
+            controller.display_products(products)
 
             product_selection = controller.get_product_selection(products, cart)
 
@@ -252,13 +262,15 @@ def shop_menu():
 
             controller.print_selected_products(product_selection)
         elif choice == 4:
-            controller = ProductController()
+            controller = ProductController(connection)
             brand = input("Enter the brand of the product: ")
-            products = controller.get_product_by_brand(connection, brand)
-            for product in products:
-                print(product)
+            products = controller.get_all_products_by_brand(brand)
+            if products:
+                controller.display_products(products)
+                product_selection= controller.get_product_selection(products, cart)
+                    
         elif choice == 5:
-            empty_cart(cart)
+            empty_cart()
         else:
             print("Invalid choice")
         input("Press Enter to continue...")
@@ -284,27 +296,32 @@ def finish_shopping():
     choice = int(input("Enter your choice: "))
     while choice != 2:
         if choice == 1:
-            pdt_controller = ProductController()
-            usr_controller = UserController()
-            user_account = usr_controller.get_user_by_username_and_password(connection, login_info[0], login_info[1])
-
-            person_name = user_account[6]
-            products = []
-            for product in cart:
-                product_info = {
-                    "name": product.name,
-                    "brand": product.brand,
-                    "price": product.unit_price * product.quantity,
-                    "quantity": product.quantity,
-                }
-                products.append(product_info)
-
-            if create_grocery_receipt(person_name, products):
+            pdt_controller = ProductController(connection)
+            usr_controller = UserController(connection)
+            user_account = usr_controller.get_user_by_username_and_password(login_info[0], login_info[1])
+            if user_account is None:
+                return
+            else: 
+                person_name = user_account[6]
+                uuid = user_account[0]
+                products = []
                 for product in cart:
-                    pdt_controller.update_stock_by_id_and_quantity(connection, product.id, product.quantity)
-                empty_cart(cart)
+                    product_info = {
+                        "name": product.name,
+                        "brand": product.brand,
+                        "price": product.unit_price * product.quantity,
+                        "quantity": product.quantity,
+                    }
+                    products.append(product_info)
+
+                rcpt_controller = ReceiptController(connection)
+                
+                rcpt_controller.create_receipt(uuid,person_name, products)
+                for product in cart:
+                    pdt_controller.update_stock_by_id_and_quantity(product.id, product.quantity)
+                empty_cart()
                 print("Thank you for shopping with us!")
-            break
+                break
         else:
             print("Invalid choice")
 
@@ -315,57 +332,6 @@ def finish_shopping():
         choice = int(input("Enter your choice: "))
 
 
-def create_grocery_receipt(person_name, products):
-    now = datetime.now()
-    date_str = now.strftime("%A, %d %B %Y")
-    time_str = now.strftime("%H:%M:%S")
-
-    # ensure that you are running this script from the root directory of the project
-    directory = "user_receipts"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    filename = f"{directory}/{person_name}_{now.strftime('%Y%m%d_%H%M%S')}.txt"
-
-    headers = ["No.", "Product", "Brand", "Price", "Quantity"]
-    rows = []
-    total = 0
-    for i, product in enumerate(products, start=1):
-        name = product["name"]
-        brand = product["brand"]
-        price = product["price"]
-        quantity = product["quantity"]
-        rows.append([i, name, brand, f"${price}", quantity])
-        total += price
-
-    rows.append(["", "", "Total", f"${total}"])
-
-    receipt_content = f"Grocery Receipt\n\nPerson's Name: {person_name}\nDate: {date_str}\nTime: {time_str}\n\n"
-    receipt_content += tabulate(rows, headers, tablefmt="fancy_grid")
-
-    with open(filename, "w", encoding="utf-8") as file:
-        file.write(receipt_content)
-
-    print(f"\nReceipt saved as '{filename}'")
-
-
-def send_receipt_to_db():
-    # call controller
-    
-    json = {
-        "person_name": variable,
-        "date": variable,
-        "time": variable,
-        "products": [
-            {
-                "name": variable,
-                "brand": variable,
-                "price": variable,
-                "quantity": variable,
-            },
-        ]
-    }
-    # call function
 
 if __name__ == "__main__":
     main()
