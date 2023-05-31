@@ -28,7 +28,7 @@ jobs:
       run: docker-compose -f "docker-compose.yml" up -d --build
       
     - name: Wait for services to start
-      run: sleep 10
+      run: docker container ps
       
     - name: Run run_tests.sh
       run: |
