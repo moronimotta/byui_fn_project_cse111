@@ -20,9 +20,15 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v3.1.4
       
+    - name: Install MySQL
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-server mysql-client
+      
     - name: Run install_imports.sh
       run: |
           sh install_imports.sh
+    
 
     - name: Start containers
       run: docker-compose -f "docker-compose.yml" up -d --build
