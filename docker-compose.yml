@@ -19,8 +19,4 @@ services:
       - '3306:3306'
     volumes:
       - ./mysqldata/1:/var/lib/mysql
-      - ./my.conf:/etc/mysql/conf.d/mysql.cnf
-      
-    networks:
-      byui_fn_project_cse111_default:
-        external: true
+

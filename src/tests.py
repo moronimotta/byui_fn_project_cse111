@@ -23,6 +23,7 @@ class TestProduct(unittest.TestCase):
         adapter = ProductAdapter(connection)
         adapter.create_product(price, stock_size, name, brand, category, True)
         self.assertTrue(True)
+
     
     def test_delete_product(self):
         uuid = "11111111-1111-1111-1111-111111111111"
