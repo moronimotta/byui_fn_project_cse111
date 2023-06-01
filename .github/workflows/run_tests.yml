@@ -34,7 +34,7 @@ jobs:
       run: docker-compose -f "docker-compose.yml" up -d --build
       
     - name: Wait for services to start
-      run: docker container ps
+      run: docker network inspect db_local_byui
       
     - name: Run run_tests.sh
       run: |
